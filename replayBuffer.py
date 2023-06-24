@@ -2,6 +2,7 @@ import collections
 import random
 import numpy as np
 import torch
+import pickle
 class ReplayBuffer():
     def __init__(self, buffer_limit):
         self.buffer = collections.deque(maxlen=buffer_limit)
@@ -31,3 +32,11 @@ class ReplayBuffer():
     
     def size(self):
         return len(self.buffer)
+    
+    def save(self, path):
+        with open(path, 'wb') as fp:
+            pickle.dump(self.buffer, fp)
+
+    def load(self, path):
+        with open(path, 'rb') as fp:
+            self.buffer = pickle.load(fp)
