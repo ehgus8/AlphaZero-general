@@ -5,6 +5,7 @@ from mcts import MCTS, Node
 from network import ActorCritic
 import torch.optim as optim
 from arena import Arena
+
 def main():
     env = TicTacToe()
     recent_model = ActorCritic(in_channels=2,policy_out=5*5)

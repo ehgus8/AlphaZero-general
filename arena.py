@@ -32,7 +32,7 @@ class Arena:
                                         iteration = 25,
                                         policy_network = models[turn % 2].policy,
                                         value_network = models[turn % 2].value,
-                                        sample_method='sample')
+                                        sample_method='mcts_distribution')
                 s_prime, r, done = self.env.step(a)
 
                 if done:

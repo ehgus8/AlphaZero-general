@@ -32,7 +32,8 @@ def main():
             a, pi = mcts.sample_action(root_node=root_node, 
                                        iteration = 25,
                                        policy_network = model.policy,
-                                       value_network = model.value)
+                                       value_network = model.value,
+                                       sample_method='mcts_distribution')
             s_prime, r, done = env.step(a)
             tmp_memory.append([s, pi, r])
             s = s_prime

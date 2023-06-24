@@ -6,7 +6,7 @@ class MCTS:
     def __init__(self, env):
         self.env = env
 
-    def sample_action(self, root_node, iteration, policy_network, value_network, sample_method = 'sample'):
+    def sample_action(self, root_node, iteration, policy_network, value_network, sample_method = 'mcts_distribution'):
         for i in range(iteration):
             self.simulation(root_node, policy_network, value_network)
 
@@ -15,9 +15,9 @@ class MCTS:
         node = root_node.get_max_visit_child()
         sampled_action = np.random.choice(np.arange(len(pi_mcts)), p=pi_mcts.numpy())
         # print('샘플',sampled_action)
-        if sample_method == 'sample':
+        if sample_method == 'mcts_distribution':
             return sampled_action, pi_mcts
-        elif sample_method == 'max_visit':
+        elif sample_method == 'mcts_max_visit':
             return node.action, pi_mcts
     
     def simulation(self, root_node,policy_network, value_network):
@@ -105,7 +105,7 @@ class Node:
             if result == True:
                 selectedNode.winner = self.current_player
             else:
-                selectedNode.winner = self.current_player/2 # draw
+                selectedNode.winner = 0 # draw
         return selectedNode
     
     def expand(self):
