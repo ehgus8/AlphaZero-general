@@ -18,7 +18,7 @@ class ReplayBuffer():
         s_lst, p_lst, r_lst = [], [], []
 
         for transition in mini_batch:
-            s, p, r = transition
+            s, p, r, _ = transition
             s_lst.append(s)
             p_lst.append(p)
             r_lst.append([r])
