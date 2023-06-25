@@ -1,0 +1,5 @@
+*.ipynb
+
+/memories
+/models
+/__pycache__
