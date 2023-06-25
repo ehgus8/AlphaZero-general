@@ -3,11 +3,12 @@
 This is a general-purpose AlphaZero implementation (work in progress) that aims to provide a flexible framework for training and playing games. It currently focuses on a specific game and will expand to include additional games in the future.
 
 ## Issue
-- **2023-06-25**  
-I have trained connect4 game for 12 hours and tested recent model against older models.
+- ~~**2023-06-25**~~  
+~~I have trained connect4 game for 12 hours and tested recent model against older models.
 But recent model does not outperform.
 I think this is due to mcts.
-I'll try to fix this issue soon.
+I'll try to fix this issue soon.~~  
+The cause is that i didn't retrain model. so i think there is not problems in mcts.
 
 
 ## Installation
