@@ -8,7 +8,7 @@ This is a general-purpose AlphaZero implementation (work in progress) that aims 
 But recent model does not outperform.
 I think this is due to mcts.
 I'll try to fix this issue soon.~~  
-The cause is that i didn't retrain model. so i think there is not problems in mcts.
+The cause is that i didn't retrain model. so i think there are not problems in mcts.
 
 
 ## Installation
