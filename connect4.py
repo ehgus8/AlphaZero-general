@@ -51,6 +51,9 @@ class Connect4:
     def get_reversed_board(self, s):
         return s * -1
     
+    def get_state(self):
+        return self.board.copy()
+
     def get_random_move(self):
         valid_indices = np.array(np.where(self.valid_moves == 1)).reshape(-1)
         random_move = np.random.choice(valid_indices,size=1)
