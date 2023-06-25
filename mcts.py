@@ -47,8 +47,6 @@ class MCTS:
         self.backup(history, v)
 
     def backup(self, history, reward):
-        # if history[-1].done == True:
-        #     reward 
         for node in history[::-1]:
             reward = -1 * reward
             node.u = node.p * (math.sqrt(node.parent.visit) if node.parent != None else 1)/(1+node.visit)
@@ -61,17 +59,17 @@ class MCTS:
 class Node:
     def __init__(self, p, current_player, action = None, parent = None):
         self.q = 0 # q <- q + 1/n * (v - q)
-        self.p = p # p_st-1a
+        self.p = p # p_(s_t-1)a
         self.pi = None # policy distribution
         self.visit = 0
-        self.u = 0 # updated in backup step, u <- p/(1+n)
+        self.u = 0 # updated in backup step
         self.children = []
         self.parent = parent
         self.action = action
         self.s = None
         self.done = False
         self.winner = None
-        self.current_player = current_player # it means player to action in this state.
+        self.current_player = current_player # it means a player to action in this state.
 
 
     def get_node_has_action(self, action):
@@ -104,7 +102,7 @@ class Node:
     
     def select(self, env):
         game_size = env.size()
-        # select action along maximizing q + u, u = c_puct * p_sa * sqrt(parent_visit) / (1 + visit_sa)
+        # select an action that maximizes q + u, u = c_puct * p_sa * sqrt(parent_visit) / (1 + visit_sa)
         selectedNode = None
         z = -999
         for child in self.children:
