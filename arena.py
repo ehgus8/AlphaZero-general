@@ -11,7 +11,7 @@ class Arena:
     def set_recent_model(self, model):
         self.recent_model = model
 
-    def play(self, n, threshold):
+    def play(self, n, threshold, sample_method = 'mcts_distribution'):
         mcts = MCTS(self.env)
         recent_model_win_cnt = 0
         enemy_model_win_cnt = 0
@@ -31,7 +31,7 @@ class Arena:
                 a, pi, node = mcts.sample_action(root_node=root_node, 
                                         iteration = 50,
                                         model = models[turn % 2],
-                                        sample_method='mcts_distribution')
+                                        sample_method=sample_method)
                 s_prime, r, done = self.env.step(a)
 
                 if done:

@@ -49,12 +49,16 @@ class ActorCritic(nn.Module):
 
     def train_net(self, memory, optimizer, batch_size, epoch = 1):
         iter = memory.size()//batch_size + 1
+        self.to('cuda:0')
         for epoch in range(epoch):
             epoch_loss = 0
             epoch_val_loss = 0
             epoch_policy_loss = 0
             for i in range(iter):
                 s, pi, r = memory.sample(batch_size)
+                s = s.to('cuda:0')
+                pi = pi.to('cuda:0')
+                r = r.to('cuda:0')
                 # print(s.shape, pi.shape, r.shape)
                 # print(self.value(s), self.value(s).shape)
                 pi_pred, v_pred = self(s)
@@ -71,3 +75,4 @@ class ActorCritic(nn.Module):
                 epoch_loss += s.shape[0] * loss.item()
             # print epoch loss
             print(f"epoch :{epoch + 1}, loss :{epoch_loss / memory.size()}, val_loss :{epoch_val_loss / memory.size()}, policy_loss :{epoch_policy_loss / memory.size()}")
+        self.to('cpu')

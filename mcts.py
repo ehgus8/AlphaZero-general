@@ -33,7 +33,7 @@ class MCTS:
 
         pi, v = model(s)
         pi = pi[1]
-        v = v.detach()
+        v = v.detach().item()
         valid_action_mask = self.env.get_action_mask(node.s)
         node.pi = pi.detach() * valid_action_mask
         # print(pi, logit,valid_action_mask,node.pi)
@@ -106,7 +106,6 @@ class Node:
         selectedNode = None
         z = -999
         for child in self.children:
-
             if child.q + child.u > z:
                 selectedNode = child
                 z = child.q + child.u
@@ -129,8 +128,10 @@ class Node:
         if self.done:
             return
         for action, p in enumerate(self.pi[0]):
-            if p.item() == 0:
+            p = p.item()
+            if p == 0:
                 continue
+
             new_node = Node(p, self.current_player * -1, action=action, parent=self)
             new_node.u = p # initial u
             self.children.append(new_node)
