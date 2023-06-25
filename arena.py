@@ -28,16 +28,19 @@ class Arena:
                 models = [self.enemy_model, self.recent_model]
             turn = 0
             while not done:
-                a, pi = mcts.sample_action(root_node=root_node, 
-                                        iteration = 25,
-                                        policy_network = models[turn % 2].policy,
-                                        value_network = models[turn % 2].value,
+                a, pi, node = mcts.sample_action(root_node=root_node, 
+                                        iteration = 50,
+                                        model = models[turn % 2],
                                         sample_method='mcts_distribution')
                 s_prime, r, done = self.env.step(a)
 
                 if done:
                     # if current_player == 1:
-                    if self.recent_model == models[turn % 2]:
+                    if r == 0:
+                        recent_model_win_cnt += 0.5
+                        enemy_model_win_cnt += 0.5
+                        print('model draw')
+                    elif self.recent_model == models[turn % 2]:
                         recent_model_win_cnt += 1
                         print('recent model win')
                     else:

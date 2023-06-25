@@ -5,14 +5,17 @@ from mcts import MCTS, Node
 from network import ActorCritic
 import torch.optim as optim
 from arena import Arena
+from connect4 import Connect4
 
 def main():
-    env = TicTacToe()
-    recent_model = ActorCritic(in_channels=2,policy_out=5*5)
-    enemy_model = ActorCritic(in_channels=2,policy_out=5*5)
+    selected_game = Connect4
+    env = selected_game()
+    game_size = env.size()
+    recent_model = ActorCritic(in_channels=1,policy_out=game_size*game_size, game_size=game_size)
+    enemy_model = ActorCritic(in_channels=1,policy_out=game_size*game_size, game_size=game_size)
     path = './models/'
-    recent_model.load_state_dict(torch.load(path + 'model_state_dict_cnt117.pt'))
-    enemy_model.load_state_dict(torch.load(path + 'model_state_dict_cnt17.pt'))
+    recent_model.load_state_dict(torch.load(path + 'model_state_dict_cnt1.pt'))
+    enemy_model.load_state_dict(torch.load(path + 'model_state_dict_cnt110.pt'))
 
     arena = Arena(env)
     arena.set_enemy_model(enemy_model)
