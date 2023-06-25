@@ -99,7 +99,7 @@ class Connect4:
         for i in range(size - 3):
             for j in range(size - 3):
                 if (np.all(board[0, [i+k*diag1[0] for k in range(4)], [j+k*diag1[1] for k in range(4)]] == player) or
-                    np.all(board[0, [i+k*diag2[0] for k in range(4)], [j+2+k*diag2[1] for k in range(4)]] == player)):
+                    np.all(board[0, [i+k*diag2[0] for k in range(4)], [j+3+k*diag2[1] for k in range(4)]] == player)):
                     return True
 
         # Check draw
