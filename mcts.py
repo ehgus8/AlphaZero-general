@@ -6,21 +6,21 @@ class MCTS:
     def __init__(self, env):
         self.env = env
 
-    def sample_action(self, root_node, iteration, policy_network, value_network, sample_method = 'mcts_distribution'):
+    def sample_action(self, root_node, iteration, model, sample_method = 'mcts_distribution'):
         for i in range(iteration):
-            self.simulation(root_node, policy_network, value_network)
+            self.simulation(root_node, model)
 
-        # print('root',root_node.visit)
         pi_mcts = root_node.get_children_distribution()
-        node = root_node.get_max_visit_child()
         sampled_action = np.random.choice(np.arange(len(pi_mcts)), p=pi_mcts.numpy())
-        # print('샘플',sampled_action)
+        # node = root_node.get_max_visit_child()
+
         if sample_method == 'mcts_distribution':
-            return sampled_action, pi_mcts
+            return sampled_action, pi_mcts, root_node.get_node_has_action(sampled_action)
         elif sample_method == 'mcts_max_visit':
-            return node.action, pi_mcts
+            node = root_node.get_max_visit_child()
+            return node.action, pi_mcts, node
     
-    def simulation(self, root_node,policy_network, value_network):
+    def simulation(self, root_node, model):
         history = []
         node = root_node
         history.append(node)
@@ -29,19 +29,29 @@ class MCTS:
             node = node.select(self.env)
             history.append(node)
         
-        logit, pi = policy_network(node.s.unsqueeze(0) if node.current_player ==1 else node.s.unsqueeze(0) * -1)
+        s = node.s.unsqueeze(0) if node.current_player ==1 else node.s.unsqueeze(0) * -1
+
+        pi, v = model(s)
+        pi = pi[1]
+        v = v.detach()
         valid_action_mask = self.env.get_action_mask(node.s)
         node.pi = pi.detach() * valid_action_mask
         # print(pi, logit,valid_action_mask,node.pi)
         node.expand()
-        v = value_network(node.s.unsqueeze(0) if node.current_player ==1 else node.s.unsqueeze(0) * -1).detach()
+        # if node.current_player == -1:
+        #     v = -1 * v
+
         if node.done == True:
-            v = node.winner
+            v = -1 if node.winner != 0 else 0
+
         self.backup(history, v)
 
     def backup(self, history, reward):
+        # if history[-1].done == True:
+        #     reward 
         for node in history[::-1]:
-            node.u = node.p * (math.sqrt(node.parent.visit + 1) if node.parent != None else 1)/(1+node.visit)
+            reward = -1 * reward
+            node.u = node.p * (math.sqrt(node.parent.visit) if node.parent != None else 1)/(1+node.visit)
             node.q = node.q + (reward - node.q)/(node.visit + 1)
             # node.q = ((node.q*node.visit) + reward)/(node.visit + 1)
             node.visit += 1 # n = visit
@@ -63,6 +73,13 @@ class Node:
         self.winner = None
         self.current_player = current_player # it means player to action in this state.
 
+
+    def get_node_has_action(self, action):
+        for child in self.children:
+            if child.action == action:
+                return child
+        return None
+    
     def get_children_distribution(self):
         sum_visit = 0
         for child in self.children:
@@ -80,11 +97,13 @@ class Node:
         for child in self.children:
             if child.visit > visit:
                 selectedNode = child
-            # print('action :',child.action//5,child.action%5,'visit:',child.visit)
+        #     print('action :',child.action//3,child.action%3,'visit:',child.visit)
 
+        # print('-----------------')
         return selectedNode
     
     def select(self, env):
+        game_size = env.size()
         # select action along maximizing q + u, u = c_puct * p_sa * sqrt(parent_visit) / (1 + visit_sa)
         selectedNode = None
         z = -999
@@ -95,8 +114,8 @@ class Node:
                 z = child.q + child.u
             # print('q :',child.q,'u :',child.u, child.q + child.u, child.q + child.u > -99)
         s = self.s.clone().detach()
-        s[0, selectedNode.action//5, selectedNode.action%5] = self.current_player
-        s[1] = selectedNode.current_player
+        s[0, selectedNode.action//game_size, selectedNode.action%game_size] = self.current_player
+        # s[1] = selectedNode.current_player
         selectedNode.s = s
         # print(s.shape,s)
         result = env.check_win(s.numpy(), self.current_player) # True : win, None: draw, False: Not ended

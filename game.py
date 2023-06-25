@@ -1,31 +1,38 @@
 import numpy as np
 import torch
 
+size = 3
+
 class TicTacToe:
     def __init__(self):
-        self.board = np.zeros((2, 5, 5),dtype=np.float32)
         self.current_player = 1
-        self.valid_moves = np.ones(5*5)
-        
+        # self.valid_moves = np.ones(5*5)
+    
+    def size(self):
+        return size
+
     def reset(self):
-        self.board = np.zeros((2, 5, 5),dtype=np.float32)
+        self.board = np.zeros((2, size, size),dtype=np.float32)
         self.current_player = 1
         self.board[1] = self.current_player
-        self.valid_moves = np.ones(5*5)
+        self.valid_moves = np.ones(size*size)
         s_prime = self.board.copy()
         r_dummy = 0
 
         return s_prime, r_dummy
     
     def step(self, action):
-        y, x = action//5, action%5
+        y, x = action//size, action%size
         done = self.make_move(self.board, y, x, self.current_player)
         self.current_player *= -1
         self.board[1] = self.current_player
         s_prime = self.board.copy()
         reward = 0
         if done == True:
-            if self.current_player == -1:
+            if self.winner == 0:
+                reward = 0
+                print('draw-----------')
+            elif self.current_player == -1:
                 reward = 1
             else:
                 reward = -1
@@ -43,9 +50,6 @@ class TicTacToe:
     # 플레이어 1은 -1 , 플레이어 2는 1로 변경 된 상태를 넘겨준다.
     def get_reversed_board(self, s):
         return s * -1
-
-    def get_init_board(self):
-        return np.zeros((1, 5, 5),dtype=np.float32)
     
     def get_random_move(self):
         valid_indices = np.array(np.where(self.valid_moves == 1)).reshape(-1)
@@ -63,7 +67,7 @@ class TicTacToe:
             return None
 
         board[0, row, col] = player
-        self.valid_moves[row * 5 + col] = 0
+        self.valid_moves[row * size + col] = 0
         
         is_win = self.check_win(board, player)
         if is_win:
@@ -80,8 +84,8 @@ class TicTacToe:
 
     def check_win(self, board, player):
         # Check rows and columns
-        for i in range(5):
-            for j in range(3):
+        for i in range(size):
+            for j in range(size - 2):
                 if (np.all(board[0, i, j:j+3] == player) or 
                     np.all(board[0, j:j+3, i] == player)):
                     return True
@@ -89,8 +93,8 @@ class TicTacToe:
         diag1 = [1, 1] # vector (y, x)
         diag2 = [1, -1] # vector (y, x)
         # Check diagonals
-        for i in range(3):
-            for j in range(3):
+        for i in range(size - 2):
+            for j in range(size - 2):
                 if (np.all(board[0, [i+k*diag1[0] for k in range(3)], [j+k*diag1[1] for k in range(3)]] == player) or
                     np.all(board[0, [i+k*diag2[0] for k in range(3)], [j+2+k*diag2[1] for k in range(3)]] == player)):
                     return True
