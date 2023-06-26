@@ -11,10 +11,10 @@ class MCTS:
             self.simulation(root_node, model)
 
         pi_mcts = root_node.get_children_distribution()
-        sampled_action = np.random.choice(np.arange(len(pi_mcts)), p=pi_mcts.numpy())
         # node = root_node.get_max_visit_child()
 
         if sample_method == 'mcts_distribution':
+            sampled_action = np.random.choice(np.arange(len(pi_mcts)), p=pi_mcts.numpy())
             return sampled_action, pi_mcts, root_node.get_node_has_action(sampled_action)
         elif sample_method == 'mcts_max_visit':
             node = root_node.get_max_visit_child()
@@ -95,6 +95,7 @@ class Node:
         for child in self.children:
             if child.visit > visit:
                 selectedNode = child
+                visit = child.visit
         #     print('action :',child.action//3,child.action%3,'visit:',child.visit)
 
         # print('-----------------')
