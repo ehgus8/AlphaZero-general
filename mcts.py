@@ -33,13 +33,14 @@ class MCTS:
 
         pi, v = model(s)
         pi = pi[1]
-        v = v.detach().item()
         valid_action_mask = self.env.get_action_mask(node.s)
-        node.pi = pi.detach() * valid_action_mask
+        pi = (pi * valid_action_mask).detach()
+        pi_sum = torch.sum(pi)
+        node.pi = pi / pi_sum
+
+        v = v.detach().item()
         # print(pi, logit,valid_action_mask,node.pi)
         node.expand()
-        # if node.current_player == -1:
-        #     v = -1 * v
 
         if node.done == True:
             v = -1 if node.winner != 0 else 0
