@@ -4,7 +4,7 @@ This is a general-purpose AlphaZero implementation (work in progress) that aims 
   
 This implementation is using Pytorch.
 
-## Issue
+## Issues
 - ~~**2023-06-25**~~  
 ~~I have trained connect4 game for 12 hours and tested recent model against older models.
 But recent model does not outperform.
